@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-01-02-PLAN.md
-last_updated: "2026-03-21T19:39:10.829Z"
-last_activity: 2026-03-21 — Completed plan 01-01 (Next.js scaffold, dark mode shell, sidebar navigation)
+stopped_at: Completed 01-foundation-01-03-PLAN.md
+last_updated: "2026-03-21T19:43:19.529Z"
+last_activity: 2026-03-21 — Completed plan 01-02 (TypeScript domain types, urgency colour constants)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 67
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-03-21 — Completed plan 01-02 (TypeScript domain types, urgency colour constants)
+Phase: 1 of 5 (Foundation) — COMPLETE
+Plan: 3 of 3 in current phase (all plans complete)
+Status: Phase 1 complete — ready for Phase 2
+Last activity: 2026-03-21 — Completed plan 01-03 (mock portfolio, lease, and transaction history data)
 
-Progress: [███████░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [███████░░░] 67%
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 309 | 2 tasks | 13 files |
 | Phase 01-foundation P02 | 2 | 2 tasks | 2 files |
+| Phase 01-foundation P03 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: All timestamps typed as number (ms epoch) — prevents Date serialization errors across Next.js Server/Client boundary
 - [Phase 01-foundation]: Urgency thresholds are percentage-based: >50%=healthy, 10-50%=warning, <10%=critical (CONTEXT.md locked decision)
 - [Phase 01-foundation]: URGENCY_TEXT_COLORS added as fourth urgency constant for countdown timer text use case (Phase 4)
+- [Phase 01-foundation]: SCU_DataPoint interface lives in mock-history.ts rather than types/index.ts — chart-specific, non-domain type
+- [Phase 01-foundation]: Mock data treated as product asset with narrative story for demo impact — Aria Chen scenario covers all urgency states on first load
 
 ### Pending Todos
 
@@ -84,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T19:39:10.826Z
-Stopped at: Completed 01-foundation-01-02-PLAN.md
+Last session: 2026-03-21T19:43:19.526Z
+Stopped at: Completed 01-foundation-01-03-PLAN.md
 Resume file: None

@@ -12,7 +12,7 @@ ComputeBank ships as a five-phase hackathon dashboard. The foundation (types, mo
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Next.js shell, TypeScript types, mock demo script, urgency colour constants
+- [x] **Phase 1: Foundation** - Next.js shell, TypeScript types, mock demo script, urgency colour constants (completed 2026-03-21)
 - [ ] **Phase 2: Asset Header** - Dashboard header with CAU/SCU/CC balance cards, action button row
 - [ ] **Phase 3: Hero Charts** - SCU Activity Monitor chart, CC transaction list, SCU warning background
 - [ ] **Phase 4: Active Leases** - Gantt panel with live countdown timers, urgency transitions, debt indicators
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/3 | In Progress|  |
+| 1. Foundation | 3/3 | Complete   | 2026-03-21 |
 | 2. Asset Header | 0/? | Not started | - |
 | 3. Hero Charts | 0/? | Not started | - |
 | 4. Active Leases | 0/? | Not started | - |

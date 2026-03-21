@@ -9,7 +9,7 @@
 
 - [x] **FOUND-01**: App has Next.js App Router shell with navigation between Dashboard, Leases, and History pages
 - [x] **FOUND-02**: TypeScript types defined for CAU, SCU, CC, Lease, and Transaction data shapes
-- [ ] **FOUND-03**: Mocked data is a staged demo script with all urgency states represented (healthy, warning, critical, debt)
+- [x] **FOUND-03**: Mocked data is a staged demo script with all urgency states represented (healthy, warning, critical, debt)
 - [x] **FOUND-04**: Shared urgency colour constants (green → yellow → pulsing red) used consistently across all components
 
 ### Asset Header
@@ -87,7 +87,7 @@
 |-------------|-------|--------|
 | FOUND-01 | Phase 1 | Complete |
 | FOUND-02 | Phase 1 | Complete |
-| FOUND-03 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Complete |
 | ASSET-01 | Phase 2 | Pending |
 | ASSET-02 | Phase 2 | Pending |
