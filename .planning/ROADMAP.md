@@ -45,7 +45,11 @@ Plans:
   2. Dashboard header shows Total SCU in available/total format (e.g. "1.1B / 100B")
   3. CC card renders with a red debt indicator when CC balance is negative
   4. Add, Swap, and Transfer buttons are visible below the cards and each opens or navigates to its respective flow
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Scaffold shadcn Card component, build CCCard (debt indicator) and SCUCard (abbreviation formatter)
+- [ ] 02-02-PLAN.md — Build AssetHeader + ActionRow, wire dashboard page.tsx to real data, create /add /swap /transfer route stubs
 
 ### Phase 3: Hero Charts
 **Goal**: The SCU Activity Monitor chart makes compute flow legible — users can see allocation, production, and consumption at a glance
@@ -89,7 +93,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-21 |
-| 2. Asset Header | 0/? | Not started | - |
+| 2. Asset Header | 0/2 | Not started | - |
 | 3. Hero Charts | 0/? | Not started | - |
 | 4. Active Leases | 0/? | Not started | - |
 | 5. Action Flows | 0/? | Not started | - |
