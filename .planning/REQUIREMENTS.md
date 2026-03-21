@@ -14,9 +14,9 @@
 
 ### Asset Header
 
-- [ ] **ASSET-01**: Dashboard header shows Total CC balance card (e.g. "$150,100") in Revolut-style format
-- [ ] **ASSET-02**: Dashboard header shows Total SCU card with available/total format (e.g. "1.1B / 100B")
-- [ ] **ASSET-03**: CC card highlights in red when balance is negative (debt state)
+- [x] **ASSET-01**: Dashboard header shows Total CC balance card (e.g. "$150,100") in Revolut-style format
+- [x] **ASSET-02**: Dashboard header shows Total SCU card with available/total format (e.g. "1.1B / 100B")
+- [x] **ASSET-03**: CC card highlights in red when balance is negative (debt state)
 - [ ] **ASSET-04**: Action button row below cards: Add, Swap, Transfer — each navigates to or opens its respective flow
 
 ### SCU Chart (Activity Monitor Style)
@@ -89,9 +89,9 @@
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Complete |
-| ASSET-01 | Phase 2 | Pending |
-| ASSET-02 | Phase 2 | Pending |
-| ASSET-03 | Phase 2 | Pending |
+| ASSET-01 | Phase 2 | Complete |
+| ASSET-02 | Phase 2 | Complete |
+| ASSET-03 | Phase 2 | Complete |
 | ASSET-04 | Phase 2 | Pending |
 | SCU-01 | Phase 3 | Pending |
 | SCU-02 | Phase 3 | Pending |
