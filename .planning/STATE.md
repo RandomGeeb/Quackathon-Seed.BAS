@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-21T19:14:45.789Z"
-last_activity: 2026-03-21 — Roadmap created, ready to begin Phase 1 planning
+status: executing
+stopped_at: Completed 01-foundation-01-01-PLAN.md
+last_updated: "2026-03-21T19:35:05.509Z"
+last_activity: 2026-03-21 — Completed plan 01-01 (Next.js scaffold, dark mode shell, sidebar navigation)
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 3
+  completed_plans: 1
   percent: 0
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 1 of 5 (Foundation)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-03-21 — Roadmap created, ready to begin Phase 1 planning
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-21 — Completed plan 01-01 (Next.js scaffold, dark mode shell, sidebar navigation)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-foundation P01 | 309 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - Phase 3: `isAnimationActive={false}` and `React.memo` must be applied to every chart component at creation time to prevent timer-tick re-renders (research flag)
 - Phase 3/4: CC balance history chart requires a Recharts `linearGradient` zero-crossing fill — treat as day-one requirement, not polish (research flag)
 - Phase 4: Single top-level `setInterval` in `LeasePanel` drives all timers; `LeaseRow` children derive urgency from a shared `now` prop
+- [Phase 01-foundation]: shadcn 4.x uses Nova preset by default; --defaults flag required for non-interactive init in v4.1.0
+- [Phase 01-foundation]: create-next-app nested .git must be removed immediately — outer repo must track frontend files as regular files not submodule
+- [Phase 01-foundation]: globals.css Tailwind v4 @theme inline pattern confirmed — urgency-pulse animation registered via --animate-urgency-pulse CSS variable
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T19:14:45.786Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Last session: 2026-03-21T19:35:05.507Z
+Stopped at: Completed 01-foundation-01-01-PLAN.md
+Resume file: None
