@@ -29,7 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. TypeScript types exist for CAU, SCU, CC, Lease, and Transaction — importing them in any component does not error
   3. Mock data contains at least one lease in each state (healthy, warning, critical) and a negative CC balance
   4. All urgency colours (green, yellow, pulsing red) are drawn from a single shared constants file — no hardcoded hex values anywhere
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 16 scaffold, shadcn init, dark mode shell, App Router route group, left sidebar nav
+- [ ] 01-02-PLAN.md — TypeScript domain types (CAU, SCU, CC, Lease, Transaction, Portfolio) + urgency colour constants and threshold function
+- [ ] 01-03-PLAN.md — Mock demo data: portfolio snapshot, three urgency-state leases, CC transaction history, SCU time-series
 
 ### Phase 2: Asset Header
 **Goal**: The dashboard header communicates the user's financial position at a glance — balances, states, and quick actions
@@ -83,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/3 | Planned | - |
 | 2. Asset Header | 0/? | Not started | - |
 | 3. Hero Charts | 0/? | Not started | - |
 | 4. Active Leases | 0/? | Not started | - |
