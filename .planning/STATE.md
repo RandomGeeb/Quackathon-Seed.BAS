@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-01-01-PLAN.md
-last_updated: "2026-03-21T19:35:05.509Z"
+stopped_at: Completed 01-foundation-01-02-PLAN.md
+last_updated: "2026-03-21T19:39:10.829Z"
 last_activity: 2026-03-21 — Completed plan 01-01 (Next.js scaffold, dark mode shell, sidebar navigation)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 1 of 5 (Foundation)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-21 — Completed plan 01-01 (Next.js scaffold, dark mode shell, sidebar navigation)
+Last activity: 2026-03-21 — Completed plan 01-02 (TypeScript domain types, urgency colour constants)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 309 | 2 tasks | 13 files |
+| Phase 01-foundation P02 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: shadcn 4.x uses Nova preset by default; --defaults flag required for non-interactive init in v4.1.0
 - [Phase 01-foundation]: create-next-app nested .git must be removed immediately — outer repo must track frontend files as regular files not submodule
 - [Phase 01-foundation]: globals.css Tailwind v4 @theme inline pattern confirmed — urgency-pulse animation registered via --animate-urgency-pulse CSS variable
+- [Phase 01-foundation]: All timestamps typed as number (ms epoch) — prevents Date serialization errors across Next.js Server/Client boundary
+- [Phase 01-foundation]: Urgency thresholds are percentage-based: >50%=healthy, 10-50%=warning, <10%=critical (CONTEXT.md locked decision)
+- [Phase 01-foundation]: URGENCY_TEXT_COLORS added as fourth urgency constant for countdown timer text use case (Phase 4)
 
 ### Pending Todos
 
@@ -80,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T19:35:05.507Z
-Stopped at: Completed 01-foundation-01-01-PLAN.md
+Last session: 2026-03-21T19:39:10.826Z
+Stopped at: Completed 01-foundation-01-02-PLAN.md
 Resume file: None
