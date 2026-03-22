@@ -16,26 +16,12 @@ import {
   ReferenceArea,
 } from "recharts";
 import Link from "next/link";
+import {
+  SCU_PROCESSES,
+  SCU_CHART_DATA,
+  SCU_TOTAL_CAPACITY,
+} from "@/lib/mock-data";
 
-const chartData = [
-  { time: "10:00", inference: 18, dataProcessing: 10, networkRouting: 7, storageIO: 5, power: 40, limit: 45 },
-  { time: "10:05", inference: 6,  dataProcessing: 4,  networkRouting: 3, storageIO: 2, power: 15, limit: 60 },
-  { time: "10:10", inference: 20, dataProcessing: 12, networkRouting: 8, storageIO: 5, power: 45, limit: 50 },
-  { time: "10:15", inference: 8,  dataProcessing: 6,  networkRouting: 4, storageIO: 2, power: 20, limit: 58 },
-  { time: "10:20", inference: 3,  dataProcessing: 2,  networkRouting: 2, storageIO: 1, power: 8,  limit: 42 },
-  { time: "10:25", inference: 24, dataProcessing: 14, networkRouting: 9, storageIO: 5, power: 52, limit: 55 },
-  { time: "10:30", inference: 10, dataProcessing: 8,  networkRouting: 5, storageIO: 2, power: 25, limit: 45 },
-  { time: "10:35", inference: 4,  dataProcessing: 3,  networkRouting: 2, storageIO: 1, power: 10, limit: 50 },
-];
-
-const processes = [
-  { name: "Model Inference",  key: "inference",     color: "#fa04fa", compute: 24, loaned: 8, loanedFrom: "10:00", loanedTill: "10:45", pct: 46, status: "active", origin: "Node-Cluster-A" },
-  { name: "Data Processing",  key: "dataProcessing", color: "#fa04fa", compute: 14, loaned: 4, loanedFrom: "10:05", loanedTill: "11:00", pct: 27, status: "active", origin: "Node-Cluster-B" },
-  { name: "Network Routing",  key: "networkRouting", color: "#c084fc", compute: 9,  loaned: 0, loanedFrom: "—",     loanedTill: "—",     pct: 17, status: "active", origin: "Node-Cluster-A" },
-  { name: "Storage I/O",      key: "storageIO",      color: "#22c55e", compute: 5,  loaned: 2, loanedFrom: "09:50", loanedTill: "10:30", pct: 10, status: "idle",   origin: "Node-Cluster-C" },
-];
-
-const TOTAL_CAPACITY = 60;
 type ChartType = "bar" | "area";
 
 function CornerMarks() {
@@ -51,7 +37,7 @@ function CornerMarks() {
 
 export default function SCUUsagePage() {
   const [chartType, setChartType] = useState<ChartType>("bar");
-  const totalCurrent = processes.reduce((s, p) => s + p.compute, 0);
+  const totalCurrent = SCU_PROCESSES.reduce((s, p) => s + p.compute, 0);
 
   return (
     <div className="flex flex-col gap-5 p-8 max-w-7xl mx-auto w-full">
@@ -71,7 +57,7 @@ export default function SCUUsagePage() {
         </div>
         <div className="flex items-center gap-2">
           <Activity className="w-3 h-3 text-primary/50" />
-          <span className="font-mono text-[9px] text-primary/50 tracking-widest">{totalCurrent} / {TOTAL_CAPACITY} SCU</span>
+          <span className="font-mono text-[9px] text-primary/50 tracking-widest">{totalCurrent} / {SCU_TOTAL_CAPACITY} SCU</span>
         </div>
       </div>
 
@@ -86,7 +72,7 @@ export default function SCUUsagePage() {
           <p className="font-mono text-[8px] text-white/45 tracking-[0.3em] uppercase mb-1">Total Active</p>
           <p className="font-mono text-2xl font-black tracking-tighter text-white">
             {totalCurrent}
-            <span className="font-mono text-base text-white/40 ml-2">/ {TOTAL_CAPACITY} SCU</span>
+            <span className="font-mono text-base text-white/40 ml-2">/ {SCU_TOTAL_CAPACITY} SCU</span>
           </p>
         </div>
       </div>
@@ -124,7 +110,7 @@ export default function SCUUsagePage() {
             {/* Legend */}
             <div className="flex items-center gap-4 flex-wrap justify-end">
               {chartType === "bar" ? (
-                processes.map((p) => (
+                SCU_PROCESSES.map((p) => (
                   <div key={p.key} className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5" style={{ backgroundColor: p.color }} />
                     <span className="font-mono text-[8px] text-white/50 uppercase tracking-widest">{p.name}</span>
@@ -149,7 +135,7 @@ export default function SCUUsagePage() {
         <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === "bar" ? (
-              <BarChart data={chartData} barCategoryGap="35%">
+              <BarChart data={SCU_CHART_DATA} barCategoryGap="35%">
                 <CartesianGrid strokeDasharray="1 6" vertical={false} stroke="rgba(255,255,255,0.04)" />
                 <XAxis dataKey="time" stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dy={10} fontFamily="monospace" />
                 <YAxis stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dx={-10} unit=" SCU" fontFamily="monospace" />
@@ -159,12 +145,12 @@ export default function SCUUsagePage() {
                   labelStyle={{ color: "rgba(255,255,255,0.4)" }}
                   cursor={{ fill: "rgba(255,255,255,0.02)" }}
                 />
-                {processes.map((p) => (
+                {SCU_PROCESSES.map((p) => (
                   <Bar key={p.key} dataKey={p.key} stackId="a" fill={p.color} name={p.name} radius={[0, 0, 0, 0]} fillOpacity={0.85} />
                 ))}
               </BarChart>
             ) : (
-              <AreaChart data={chartData}>
+              <AreaChart data={SCU_CHART_DATA}>
                 <defs>
                   <linearGradient id="greenBg2" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
@@ -210,7 +196,7 @@ export default function SCUUsagePage() {
         </div>
 
         <div className="space-y-0.5">
-          {processes.map((p) => (
+          {SCU_PROCESSES.map((p) => (
             <div
               key={p.key}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr_1fr_1.5fr] gap-4 items-center px-4 py-3 border border-transparent hover:border-white/5 hover:bg-white/[0.01] transition-colors"
@@ -266,16 +252,16 @@ export default function SCUUsagePage() {
         {/* Totals row */}
         <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 mt-2 pt-4 border-t border-white/5 items-center">
           <p className="font-mono text-[9px] text-white/55 tracking-[0.3em] uppercase">Total</p>
-          <p className="font-mono text-[10px] font-black text-primary">{processes.reduce((s, p) => s + p.loaned, 0)} SCU</p>
+          <p className="font-mono text-[10px] font-black text-primary">{SCU_PROCESSES.reduce((s, p) => s + p.loaned, 0)} SCU</p>
           <div /><div />
           <div className="flex items-center gap-2">
             <div className="flex-1 h-px bg-white/8">
               <div
                 className="h-full bg-primary shadow-[0_0_6px_#fa04fa]"
-                style={{ width: `${Math.round((totalCurrent / TOTAL_CAPACITY) * 100)}%` }}
+                style={{ width: `${Math.round((totalCurrent / SCU_TOTAL_CAPACITY) * 100)}%` }}
               />
             </div>
-            <span className="font-mono text-[9px] font-black text-white/55 w-7 text-right">{Math.round((totalCurrent / TOTAL_CAPACITY) * 100)}%</span>
+            <span className="font-mono text-[9px] font-black text-white/55 w-7 text-right">{Math.round((totalCurrent / SCU_TOTAL_CAPACITY) * 100)}%</span>
           </div>
           <div /><div />
         </div>

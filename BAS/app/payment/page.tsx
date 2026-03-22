@@ -3,39 +3,27 @@
 import { useState } from "react";
 import { ArrowLeft, Zap, AlertTriangle, Send, Clock } from "lucide-react";
 import Link from "next/link";
-
-// ─── Constants ─────────────────────────────────────────────────────────────
-
-const CC_BALANCE      = 150100;
-const SCU_BALANCE     = 84500;
-const PAYMENT_FEE_PCT = 0.003;  // 0.3%
-const LOAN_FEE_PCT    = 0.01;   // 1.0%
-
-const CC_PRESETS     = [100, 500, 1000, 5000];
-const SCU_S_PRESETS  = [1, 5, 10, 50];
-const DUR_PRESETS    = [60, 300, 3600, 86400];
-
-// SCU currently committed — expires at these times (minutes from now)
-const COMMITTED_SCU = [
-  { label: "STORAGE I/O",     origin: "Node-Cluster-C", scuReturning: 2_100,  returnsInMin: 18 },
-  { label: "MODEL INFERENCE", origin: "Node-Cluster-A", scuReturning: 8_500,  returnsInMin: 33 },
-  { label: "DATA PROCESSING", origin: "Node-Cluster-B", scuReturning: 4_200,  returnsInMin: 48 },
-];
+import {
+  PAYMENT_FEE_PCT,
+  LOAN_FEE_PCT,
+  CC_PAYMENT_PRESETS,
+  SCU_S_LOAN_PRESETS,
+  DUR_LOAN_PRESETS,
+  COMMITTED_SCU,
+  type CommittedSlot,
+} from "@/lib/mock-data";
+import { useStore } from "@/lib/store";
 
 type Mode = "PAYMENT" | "LOAN";
 
-interface AvailabilitySlot {
-  label: string;
-  origin: string;
-  scuReturning: number;
-  returnsInMin: number;
-  cumulativeAfter: number; // SCU_BALANCE + all returned up to and including this slot
-  covers: boolean;         // does this slot give enough?
+interface AvailabilitySlot extends CommittedSlot {
+  cumulativeAfter: number;
+  covers:          boolean;
 }
 
-function computeAvailability(needed: number): AvailabilitySlot[] {
+function computeAvailability(needed: number, currentBalance: number): AvailabilitySlot[] {
   const sorted = [...COMMITTED_SCU].sort((a, b) => a.returnsInMin - b.returnsInMin);
-  let cumulative = SCU_BALANCE;
+  let cumulative = currentBalance;
   let covered = false;
   return sorted.map((slot) => {
     cumulative += slot.scuReturning;
@@ -49,18 +37,14 @@ function computeAvailability(needed: number): AvailabilitySlot[] {
 
 function formatDuration(s: number): string {
   if (s <= 0) return "—";
-  if (s < 60)   return `${s}s`;
-  if (s < 3600) return `${Math.floor(s / 60)}m ${s % 60 > 0 ? `${s % 60}s` : ""}`.trim();
+  if (s < 60)    return `${s}s`;
+  if (s < 3600)  return `${Math.floor(s / 60)}m ${s % 60 > 0 ? `${s % 60}s` : ""}`.trim();
   if (s < 86400) return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60) > 0 ? `${Math.floor((s % 3600) / 60)}m` : ""}`.trim();
   return `${Math.floor(s / 86400)}d ${Math.floor((s % 86400) / 3600) > 0 ? `${Math.floor((s % 86400) / 3600)}h` : ""}`.trim();
 }
 
 function CornerMarks({ accent = "primary" }: { accent?: "primary" | "green" | "muted" }) {
-  const cls = accent === "green"
-    ? "border-[#22c55e]/50"
-    : accent === "muted"
-    ? "border-white/20"
-    : "border-primary/50";
+  const cls = accent === "green" ? "border-[#22c55e]/50" : "border-primary/50";
   return (
     <>
       <span className={`absolute top-0 left-0 w-3 h-3 border-t border-l ${cls} pointer-events-none`} />
@@ -83,6 +67,7 @@ function FieldLabel({ code, label }: { code: string; label: string }) {
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function PaymentPage() {
+  const { ccBalance, scuBalance, executePayment, executeLoan } = useStore();
   const [mode, setMode]           = useState<Mode>("PAYMENT");
   const [recipient, setRecipient] = useState("");
   const [note, setNote]           = useState("");
@@ -100,21 +85,20 @@ export default function PaymentPage() {
   const parsedSPS = parseFloat(scuPerSec) || 0;
   const parsedDur = parseInt(duration)    || 0;
 
-  const totalSCU     = parsedSPS * parsedDur;
-  const loanFee      = totalSCU * LOAN_FEE_PCT;
-  const loanTotal    = totalSCU + loanFee;
+  const totalSCU  = parsedSPS * parsedDur;
+  const loanFee   = totalSCU * LOAN_FEE_PCT;
+  const loanTotal = totalSCU + loanFee;
 
-  const payFee       = parsedCC * PAYMENT_FEE_PCT;
-  const payTotal     = parsedCC + payFee;
+  const payFee    = parsedCC * PAYMENT_FEE_PCT;
+  const payTotal  = parsedCC + payFee;
 
-  const payExcess    = payTotal > CC_BALANCE;
-  const loanExcess   = loanTotal > SCU_BALANCE;
-  const availability = loanExcess ? computeAvailability(loanTotal) : [];
+  const payExcess    = payTotal > ccBalance;
+  const loanExcess   = loanTotal > scuBalance;
+  const availability = loanExcess ? computeAvailability(loanTotal, scuBalance) : [];
 
-  const payValid     = parsedCC > 0 && recipient.trim().length > 0 && !payExcess;
-  const loanValid    = parsedSPS > 0 && parsedDur > 0 && recipient.trim().length > 0 && !loanExcess;
-  const isValid      = mode === "PAYMENT" ? payValid : loanValid;
-  const isExcess     = mode === "PAYMENT" ? payExcess : loanExcess;
+  const payValid  = parsedCC > 0 && recipient.trim().length > 0 && !payExcess;
+  const loanValid = parsedSPS > 0 && parsedDur > 0 && recipient.trim().length > 0 && !loanExcess;
+  const isValid   = mode === "PAYMENT" ? payValid : loanValid;
 
   function reset() {
     setConfirmed(false);
@@ -189,7 +173,7 @@ export default function PaymentPage() {
 
       {/* Recipient */}
       <div className="relative bg-[#0d0d0d] border border-white/[0.06] p-6">
-        <CornerMarks accent="muted" />
+        <CornerMarks />
         <FieldLabel code="PAY.001" label="RECIPIENT" />
         <div className="relative border border-white/[0.08] bg-white/[0.02] focus-within:border-primary/40 transition-colors">
           <input
@@ -216,7 +200,7 @@ export default function PaymentPage() {
 
           <div className="flex items-center justify-between mb-4">
             <span className="font-mono text-[8px] text-white/40 tracking-[0.2em] uppercase">Available</span>
-            <span className="font-mono text-[9px] font-black text-primary">{CC_BALANCE.toLocaleString()} CC</span>
+            <span className="font-mono text-[9px] font-black text-primary">{ccBalance.toLocaleString()} CC</span>
           </div>
 
           <div className={`relative border transition-colors ${
@@ -243,14 +227,14 @@ export default function PaymentPage() {
           )}
 
           <div className="grid grid-cols-4 gap-2 mt-4">
-            {CC_PRESETS.map((p) => (
+            {CC_PAYMENT_PRESETS.map((p) => (
               <button
                 key={p}
                 onClick={() => { setCcAmount(String(p)); setConfirmed(false); }}
                 className={`border font-mono text-[9px] font-black tracking-[0.15em] py-2 transition-all uppercase ${
                   parsedCC === p
                     ? "border-primary/50 bg-primary/10 text-primary"
-                    : "border-white/[0.08] text-white/40 hover:border-white/20 hover:text-white/60"
+                    : "border-white/[0.08] text-white/40 hover:border-primary/50 hover:text-white/60"
                 }`}
               >
                 {p.toLocaleString()} CC
@@ -291,14 +275,14 @@ export default function PaymentPage() {
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-1.5 mt-3">
-                {SCU_S_PRESETS.map((p) => (
+                {SCU_S_LOAN_PRESETS.map((p) => (
                   <button
                     key={p}
                     onClick={() => { setScuPerSec(String(p)); setConfirmed(false); }}
                     className={`border font-mono text-[8px] font-black py-1.5 transition-all ${
                       parsedSPS === p
                         ? "border-primary/50 bg-primary/10 text-primary"
-                        : "border-white/[0.08] text-white/40 hover:border-white/20 hover:text-white/60"
+                        : "border-white/[0.08] text-white/40 hover:border-primary/50 hover:text-white/60"
                     }`}
                   >
                     {p}
@@ -331,14 +315,14 @@ export default function PaymentPage() {
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-1.5 mt-3">
-                {DUR_PRESETS.map((p) => (
+                {DUR_LOAN_PRESETS.map((p) => (
                   <button
                     key={p}
                     onClick={() => { setDuration(String(p)); setConfirmed(false); }}
                     className={`border font-mono text-[8px] font-black py-1.5 transition-all ${
                       parsedDur === p
                         ? "border-[#22c55e]/50 bg-[#22c55e]/10 text-[#22c55e]"
-                        : "border-white/[0.08] text-white/40 hover:border-white/20 hover:text-white/60"
+                        : "border-white/[0.08] text-white/40 hover:border-primary/50 hover:text-white/60"
                     }`}
                   >
                     {formatDuration(p)}
@@ -364,7 +348,7 @@ export default function PaymentPage() {
               <div className="text-right space-y-1">
                 <div>
                   <p className="font-mono text-[8px] text-white/40 tracking-[0.2em] uppercase">Available</p>
-                  <p className="font-mono text-sm font-black text-[#22c55e]">{SCU_BALANCE.toLocaleString()} SCU</p>
+                  <p className="font-mono text-sm font-black text-[#22c55e]">{scuBalance.toLocaleString()} SCU</p>
                 </div>
                 {parsedSPS > 0 && parsedDur > 0 && (
                   <p className="font-mono text-[8px] text-white/40 tracking-[0.15em] uppercase">
@@ -379,7 +363,7 @@ export default function PaymentPage() {
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
                   <span className="font-mono text-[8px] text-red-400 tracking-[0.2em] uppercase">
-                    Insufficient · Need {(loanTotal - SCU_BALANCE).toLocaleString(undefined, { maximumFractionDigits: 0 })} more SCU
+                    Insufficient · Need {(loanTotal - scuBalance).toLocaleString(undefined, { maximumFractionDigits: 0 })} more SCU
                   </span>
                 </div>
 
@@ -437,7 +421,7 @@ export default function PaymentPage() {
       <div className="relative bg-[#0d0d0d] border border-white/[0.06] p-6">
         <CornerMarks accent="muted" />
         <FieldLabel code="PAY.004" label="NOTE (OPTIONAL)" />
-        <div className="relative border border-white/[0.08] bg-white/[0.02] focus-within:border-white/20 transition-colors">
+        <div className="relative border border-white/[0.08] bg-white/[0.02] focus-within:border-primary/50 transition-colors">
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -459,10 +443,10 @@ export default function PaymentPage() {
         {mode === "PAYMENT" ? (
           <div className="space-y-2.5">
             {[
-              { label: "Recipient",       value: recipient.trim() || "—",                                      accent: false },
-              { label: "Send Amount",     value: parsedCC > 0 ? `${parsedCC.toLocaleString()} CC` : "—",       accent: false },
-              { label: "Network Fee (0.3%)", value: parsedCC > 0 ? `${payFee.toFixed(2)} CC` : "—",           accent: false },
-              { label: "Total Deducted",  value: parsedCC > 0 ? `${payTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} CC` : "—", accent: true },
+              { label: "Recipient",           value: recipient.trim() || "—",                                                                               accent: false },
+              { label: "Send Amount",         value: parsedCC > 0 ? `${parsedCC.toLocaleString()} CC` : "—",                                               accent: false },
+              { label: "Network Fee (0.3%)",  value: parsedCC > 0 ? `${payFee.toFixed(2)} CC` : "—",                                                       accent: false },
+              { label: "Total Deducted",      value: parsedCC > 0 ? `${payTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} CC` : "—",        accent: true  },
             ].map(({ label, value, accent }) => (
               <div key={label} className="flex items-center justify-between">
                 <span className="font-mono text-[9px] text-white/45 tracking-[0.2em] uppercase">{label}</span>
@@ -473,12 +457,12 @@ export default function PaymentPage() {
         ) : (
           <div className="space-y-2.5">
             {[
-              { label: "Recipient",       value: recipient.trim() || "—",                                           accent: false },
-              { label: "Rate",            value: parsedSPS > 0 ? `${parsedSPS.toLocaleString()} SCU/s` : "—",       accent: false },
-              { label: "Duration",        value: parsedDur > 0 ? formatDuration(parsedDur) : "—",                   accent: false },
-              { label: "Total SCU",       value: totalSCU > 0 ? `${totalSCU.toLocaleString()} SCU` : "—",           accent: false },
-              { label: "Loan Fee (1.0%)", value: totalSCU > 0 ? `${loanFee.toLocaleString(undefined, { maximumFractionDigits: 2 })} SCU` : "—", accent: false },
-              { label: "Total Deducted",  value: totalSCU > 0 ? `${loanTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} SCU` : "—", accent: true },
+              { label: "Recipient",       value: recipient.trim() || "—",                                                                                   accent: false },
+              { label: "Rate",            value: parsedSPS > 0 ? `${parsedSPS.toLocaleString()} SCU/s` : "—",                                              accent: false },
+              { label: "Duration",        value: parsedDur > 0 ? formatDuration(parsedDur) : "—",                                                           accent: false },
+              { label: "Total SCU",       value: totalSCU > 0 ? `${totalSCU.toLocaleString()} SCU` : "—",                                                  accent: false },
+              { label: "Loan Fee (1.0%)", value: totalSCU > 0 ? `${loanFee.toLocaleString(undefined, { maximumFractionDigits: 2 })} SCU` : "—",           accent: false },
+              { label: "Total Deducted",  value: totalSCU > 0 ? `${loanTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} SCU` : "—",          accent: true  },
             ].map(({ label, value, accent }) => (
               <div key={label} className="flex items-center justify-between">
                 <span className="font-mono text-[9px] text-white/45 tracking-[0.2em] uppercase">{label}</span>
@@ -504,13 +488,18 @@ export default function PaymentPage() {
         {confirmed && (
           <button
             onClick={reset}
-            className="border border-white/[0.08] bg-white/[0.02] px-6 py-4 font-mono text-[9px] font-black tracking-[0.25em] uppercase text-white/40 hover:text-white/60 hover:border-white/20 transition-all"
+            className="border border-white/[0.08] bg-white/[0.02] px-6 py-4 font-mono text-[9px] font-black tracking-[0.25em] uppercase text-white/40 hover:text-white/60 hover:border-primary/50 transition-all"
           >
             RESET
           </button>
         )}
         <button
-          onClick={() => { if (isValid) setConfirmed(true); }}
+          onClick={() => {
+          if (!isValid) return;
+          if (mode === "PAYMENT") executePayment(parsedCC, recipient, note);
+          else executeLoan(parsedSPS, parsedDur, recipient, note);
+          setConfirmed(true);
+        }}
           disabled={!isValid}
           className={`relative flex-1 py-4 font-mono text-sm font-black tracking-[0.3em] uppercase transition-all duration-200 ${
             confirmed

@@ -3,157 +3,23 @@
 import { useState } from "react";
 import { ArrowLeft, Cpu, HardDrive, MemoryStick } from "lucide-react";
 import Link from "next/link";
-
-// ─── Data ──────────────────────────────────────────────────────────────────
-
-type CAUType = "GPU" | "CPU" | "RAM";
-type CAUTier = "S" | "A" | "B" | "C";
-type CAUStatus = "active" | "idle" | "offline";
-
-interface CAU {
-  id: string;
-  name: string;
-  model: string;
-  type: CAUType;
-  tier: CAUTier;
-  scu: number;           // total SCU capacity
-  scuUsed: number;       // currently used SCU
-  temp: number;          // °C
-  clock: string;         // e.g. "2.52 GHz"
-  power: number;         // watts draw
-  utilPct: number;       // 0-100
-  vram?: string;         // GPU only
-  cores?: number;        // CPU only
-  capacity?: string;     // RAM only
-  status: CAUStatus;
-  acquiredDate: string;
-}
-
-const caus: CAU[] = [
-  {
-    id: "CAU-001",
-    name: "TITAN-ALPHA",
-    model: "NVIDIA RTX 4090",
-    type: "GPU",
-    tier: "S",
-    scu: 1200,
-    scuUsed: 882,
-    temp: 74,
-    clock: "2.52 GHz",
-    power: 418,
-    utilPct: 73,
-    vram: "24 GB GDDR6X",
-    status: "active",
-    acquiredDate: "2024-01-15",
-  },
-  {
-    id: "CAU-002",
-    name: "CORE-PRIME",
-    model: "AMD Threadripper 5995WX",
-    type: "CPU",
-    tier: "S",
-    scu: 480,
-    scuUsed: 312,
-    temp: 68,
-    clock: "4.5 GHz",
-    power: 280,
-    utilPct: 65,
-    cores: 64,
-    status: "active",
-    acquiredDate: "2024-01-15",
-  },
-  {
-    id: "CAU-003",
-    name: "VEGA-NODE",
-    model: "NVIDIA RTX 3080",
-    type: "GPU",
-    tier: "A",
-    scu: 680,
-    scuUsed: 204,
-    temp: 61,
-    clock: "1.71 GHz",
-    power: 320,
-    utilPct: 30,
-    vram: "10 GB GDDR6X",
-    status: "active",
-    acquiredDate: "2024-03-08",
-  },
-  {
-    id: "CAU-004",
-    name: "NEXUS-9K",
-    model: "Intel Core i9-13900K",
-    type: "CPU",
-    tier: "B",
-    scu: 220,
-    scuUsed: 44,
-    temp: 45,
-    clock: "5.8 GHz",
-    power: 125,
-    utilPct: 20,
-    cores: 24,
-    status: "idle",
-    acquiredDate: "2024-05-22",
-  },
-  {
-    id: "CAU-005",
-    name: "BUFFER-ECC",
-    model: "DDR5-6400 64GB ECC",
-    type: "RAM",
-    tier: "A",
-    scu: 120,
-    scuUsed: 96,
-    temp: 38,
-    clock: "6400 MT/s",
-    power: 12,
-    utilPct: 80,
-    capacity: "64 GB ECC",
-    status: "active",
-    acquiredDate: "2024-01-15",
-  },
-  {
-    id: "CAU-006",
-    name: "CACHE-32",
-    model: "DDR4-3600 32GB",
-    type: "RAM",
-    tier: "C",
-    scu: 45,
-    scuUsed: 9,
-    temp: 32,
-    clock: "3600 MT/s",
-    power: 6,
-    utilPct: 20,
-    capacity: "32 GB",
-    status: "idle",
-    acquiredDate: "2024-07-03",
-  },
-];
+import {
+  CAU_ASSETS,
+  CAU_TYPE_COLOR,
+  CAU_TIER_COLOR,
+  CAU_TIER_LABEL,
+  type CAU,
+  type CAUType,
+  type CAUTier,
+} from "@/lib/mock-data";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
-const TYPE_COLOR: Record<CAUType, string> = {
-  GPU: "#fa04fa",
-  CPU: "#c084fc",
-  RAM: "#22c55e",
-};
-
-const TIER_COLOR: Record<CAUTier, string> = {
-  S: "#fbbf24",
-  A: "#fa04fa",
-  B: "#c084fc",
-  C: "#22c55e",
-};
-
-const TIER_LABEL: Record<CAUTier, string> = {
-  S: "TIER-S · ELITE",
-  A: "TIER-A · HIGH",
-  B: "TIER-B · MID",
-  C: "TIER-C · ENTRY",
-};
-
-function TypeIcon({ type, className }: { type: CAUType; className?: string }) {
-  if (type === "GPU") return <Cpu className={className} />;
-  if (type === "CPU") return <HardDrive className={className} />;
-  return <MemoryStick className={className} />;
+function TypeIcon({ type, className, color }: { type: CAUType; className?: string; color: string }) {
+  const style = { color } as React.CSSProperties;
+  if (type === "GPU") return <Cpu className={className} style={style} />;
+  if (type === "CPU") return <HardDrive className={className} style={style} />;
+  return <MemoryStick className={className} style={style} />;
 }
 
 function CornerMarks() {
@@ -182,8 +48,8 @@ function StatPill({ label, value, dim }: { label: string; value: string; dim?: s
 // ─── CAU Card ──────────────────────────────────────────────────────────────
 
 function CAUCard({ cau }: { cau: CAU }) {
-  const typeColor = TYPE_COLOR[cau.type];
-  const tierColor = TIER_COLOR[cau.tier];
+  const typeColor = CAU_TYPE_COLOR[cau.type];
+  const tierColor = CAU_TIER_COLOR[cau.tier];
   const isActive = cau.status === "active";
 
   return (
@@ -204,7 +70,7 @@ function CAUCard({ cau }: { cau: CAU }) {
             className="flex h-9 w-9 items-center justify-center border shrink-0"
             style={{ borderColor: `${typeColor}30`, backgroundColor: `${typeColor}08` }}
           >
-            <TypeIcon type={cau.type} className="h-3.5 w-3.5" style={{ color: typeColor } as React.CSSProperties} />
+            <TypeIcon type={cau.type} className="h-3.5 w-3.5" color={typeColor} />
           </div>
           <div>
             <p className="font-mono text-[9px] text-white/55 tracking-[0.3em] uppercase">{cau.id}</p>
@@ -313,11 +179,9 @@ type FilterType = "ALL" | CAUType;
 export default function CAUPage() {
   const [filter, setFilter] = useState<FilterType>("ALL");
 
-  const totalSCU = caus.reduce((s, c) => s + c.scu, 0);
-  const activeCount = caus.filter((c) => c.status === "active").length;
-
-  const filtered = filter === "ALL" ? caus : caus.filter((c) => c.type === filter);
-
+  const totalSCU    = CAU_ASSETS.reduce((s, c) => s + c.scu, 0);
+  const activeCount = CAU_ASSETS.filter((c) => c.status === "active").length;
+  const filtered    = filter === "ALL" ? CAU_ASSETS : CAU_ASSETS.filter((c) => c.type === filter);
   const FILTERS: FilterType[] = ["ALL", "GPU", "CPU", "RAM"];
 
   return (
@@ -363,7 +227,7 @@ export default function CAUPage() {
             <p className="font-mono text-[8px] text-white/45 tracking-[0.3em] uppercase mb-1">Active Units</p>
             <p className="font-mono text-2xl font-black tracking-tighter text-white">
               {activeCount}
-              <span className="font-mono text-sm text-white/35 ml-2 uppercase">/ {caus.length}</span>
+              <span className="font-mono text-sm text-white/35 ml-2 uppercase">/ {CAU_ASSETS.length}</span>
             </p>
           </div>
         </div>
@@ -386,7 +250,7 @@ export default function CAUPage() {
               {f === "ALL" ? "ALL" : f}
               {f !== "ALL" && (
                 <span className="ml-1.5 opacity-50">
-                  [{caus.filter((c) => c.type === f).length}]
+                  [{CAU_ASSETS.filter((c) => c.type === f).length}]
                 </span>
               )}
             </button>
@@ -411,17 +275,17 @@ export default function CAUPage() {
               <div key={tier} className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 border flex items-center justify-center"
-                  style={{ borderColor: `${TIER_COLOR[tier]}50`, backgroundColor: `${TIER_COLOR[tier]}10` }}
+                  style={{ borderColor: `${CAU_TIER_COLOR[tier]}50`, backgroundColor: `${CAU_TIER_COLOR[tier]}10` }}
                 >
-                  <span className="font-mono text-[7px] font-black" style={{ color: TIER_COLOR[tier] }}>{tier}</span>
+                  <span className="font-mono text-[7px] font-black" style={{ color: CAU_TIER_COLOR[tier] }}>{tier}</span>
                 </div>
-                <span className="font-mono text-[8px] text-white/60 uppercase tracking-[0.2em]">{TIER_LABEL[tier]}</span>
+                <span className="font-mono text-[8px] text-white/60 uppercase tracking-[0.2em]">{CAU_TIER_LABEL[tier]}</span>
               </div>
             ))}
             <div className="h-3 w-px bg-white/[0.08]" />
             {(["GPU", "CPU", "RAM"] as CAUType[]).map((type) => (
               <div key={type} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5" style={{ backgroundColor: TYPE_COLOR[type] }} />
+                <div className="w-1.5 h-1.5" style={{ backgroundColor: CAU_TYPE_COLOR[type] }} />
                 <span className="font-mono text-[8px] text-white/60 uppercase tracking-[0.2em]">{type}</span>
               </div>
             ))}

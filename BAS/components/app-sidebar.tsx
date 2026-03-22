@@ -34,7 +34,7 @@ export function AppSidebar() {
               <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/60" />
             </div>
             <div>
-              <p className="font-mono text-sm font-black tracking-[0.12em] text-white uppercase">BANKAPP</p>
+              <p className="font-mono text-sm font-black tracking-[0.12em] text-white uppercase">BAS</p>
               <p className="font-mono text-[8px] text-white/45 tracking-widest">v2.4.1 // ACTIVE</p>
             </div>
           </div>

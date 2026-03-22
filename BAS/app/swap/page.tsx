@@ -3,16 +3,13 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowUpDown, Zap, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-
-// ─── Constants ─────────────────────────────────────────────────────────────
-
-const CC_BALANCE  = 150100;
-const SCU_BALANCE = 84500;
-const RATE        = 12.5;   // 1 CC = 12.5 SCU
-const FEE_PCT     = 0.005;  // 0.5%
-
-const PRESETS_CC  = [500, 1000, 5000, 10000];
-const PRESETS_SCU = [5000, 10000, 50000, 100000];
+import {
+  EXCHANGE_RATE,
+  SWAP_FEE_PCT,
+  CC_SWAP_PRESETS,
+  SCU_SWAP_PRESETS,
+} from "@/lib/mock-data";
+import { useStore } from "@/lib/store";
 
 type Direction = "CC_TO_SCU" | "SCU_TO_CC";
 
@@ -33,6 +30,7 @@ function CornerMarks({ color = "primary" }: { color?: "primary" | "green" }) {
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function SwapPage() {
+  const { ccBalance, scuBalance, executeSwap } = useStore();
   const [direction, setDirection] = useState<Direction>("CC_TO_SCU");
   const [amount, setAmount]       = useState<string>("");
   const [confirmed, setConfirmed] = useState(false);
@@ -41,23 +39,25 @@ export default function SwapPage() {
   const isCCtoSCU  = direction === "CC_TO_SCU";
   const fromLabel  = isCCtoSCU ? "CC"  : "SCU";
   const toLabel    = isCCtoSCU ? "SCU" : "CC";
-  const fromBal    = isCCtoSCU ? CC_BALANCE  : SCU_BALANCE;
+  const fromBal    = isCCtoSCU ? ccBalance : scuBalance;
   const fromColor  = isCCtoSCU ? "primary"   : "green" as const;
   const toColor    = isCCtoSCU ? "green"     : "primary" as const;
-  const presets    = isCCtoSCU ? PRESETS_CC  : PRESETS_SCU;
-  const rateLabel  = isCCtoSCU ? `1 CC = ${RATE} SCU` : `1 SCU = ${(1 / RATE).toFixed(4)} CC`;
+  const presets    = isCCtoSCU ? CC_SWAP_PRESETS : SCU_SWAP_PRESETS;
+  const rateLabel  = isCCtoSCU
+    ? `1 CC = ${EXCHANGE_RATE} SCU`
+    : `1 SCU = ${(1 / EXCHANGE_RATE).toFixed(4)} CC`;
 
   const parsed  = parseFloat(amount) || 0;
-  const fee     = parsed * FEE_PCT;
+  const fee     = parsed * SWAP_FEE_PCT;
   const net     = parsed - fee;
-  const output  = isCCtoSCU ? net * RATE : net / RATE;
+  const output  = isCCtoSCU ? net * EXCHANGE_RATE : net / EXCHANGE_RATE;
 
   const isExcess = parsed > fromBal;
   const isValid  = parsed > 0 && !isExcess;
 
   const fromAccent = isCCtoSCU ? "text-primary" : "text-[#22c55e]";
   const toAccent   = isCCtoSCU ? "text-[#22c55e]" : "text-primary";
-  const fromBorder = isCCtoSCU ? "border-primary/30 bg-primary/8"      : "border-[#22c55e]/30 bg-[#22c55e]/8";
+  const fromBorder = isCCtoSCU ? "border-primary/30 bg-primary/8"          : "border-[#22c55e]/30 bg-[#22c55e]/8";
   const toBorder   = isCCtoSCU ? "border-[#22c55e]/15 bg-[#22c55e]/[0.03]" : "border-primary/15 bg-primary/[0.03]";
 
   function handleFlip() {
@@ -80,11 +80,12 @@ export default function SwapPage() {
 
   function handleConfirm() {
     if (!isValid) return;
+    executeSwap(direction, parsed);
     setConfirmed(true);
   }
 
-  const feeStr    = parsed > 0 ? `${fee.toFixed(2)} ${fromLabel}` : "—";
-  const sendStr   = parsed > 0 ? `${parsed.toLocaleString()} ${fromLabel}` : "—";
+  const feeStr     = parsed > 0 ? `${fee.toFixed(2)} ${fromLabel}` : "—";
+  const sendStr    = parsed > 0 ? `${parsed.toLocaleString()} ${fromLabel}` : "—";
   const receiveStr = output > 0
     ? `${output.toLocaleString(undefined, { maximumFractionDigits: 4 })} ${toLabel}`
     : "—";
@@ -245,7 +246,7 @@ export default function SwapPage() {
             <div className="flex items-center gap-2">
               <span className="font-mono text-[8px] text-white/40 tracking-[0.2em] uppercase">Balance</span>
               <span className={`font-mono text-[9px] font-black tracking-wider ${toAccent}`}>
-                {(isCCtoSCU ? SCU_BALANCE : CC_BALANCE).toLocaleString()} {toLabel}
+                {(isCCtoSCU ? scuBalance : ccBalance).toLocaleString()} {toLabel}
               </span>
             </div>
           </div>
@@ -284,10 +285,10 @@ export default function SwapPage() {
 
         <div className="space-y-2.5">
           {[
-            { label: "Exchange Rate",     value: rateLabel,   accent: false },
-            { label: "You Send",          value: sendStr,     accent: false },
-            { label: "Network Fee (0.5%)", value: feeStr,     accent: false },
-            { label: "You Receive",       value: receiveStr,  accent: true  },
+            { label: "Exchange Rate",      value: rateLabel,   accent: false },
+            { label: "You Send",           value: sendStr,     accent: false },
+            { label: "Network Fee (0.5%)", value: feeStr,      accent: false },
+            { label: "You Receive",        value: receiveStr,  accent: true  },
           ].map(({ label, value, accent }) => (
             <div key={label} className="flex items-center justify-between">
               <span className="font-mono text-[9px] text-white/45 tracking-[0.2em] uppercase">{label}</span>
