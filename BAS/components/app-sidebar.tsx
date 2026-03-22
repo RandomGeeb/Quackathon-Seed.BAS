@@ -1,13 +1,14 @@
 "use client";
 import * as React from "react";
-import { LayoutDashboard, ArrowLeftRight, History, CircuitBoard } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, History, CircuitBoard, CreditCard } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard",       icon: LayoutDashboard, code: "01" },
-  { title: "History",   url: "/dashboard",       icon: History,         code: "02" },
+  { title: "History",   url: "/payment",         icon: History,         code: "02" },
   { title: "Transfer",  url: "/swap",            icon: ArrowLeftRight,  code: "03" },
-  { title: "CAU",       url: "/dashboard/cau",   icon: CircuitBoard,    code: "04" },
+  { title: "Payment",   url: "/payment",         icon: CreditCard,      code: "04" },
+  { title: "CAU",       url: "/dashboard/cau",   icon: CircuitBoard,    code: "05" },
 ];
 
 export function AppSidebar() {
