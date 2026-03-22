@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Activity, ArrowLeft, BarChart2, TrendingUp as TrendingUpIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   BarChart,
   Bar,
@@ -30,122 +29,96 @@ const chartData = [
 ];
 
 const processes = [
-  {
-    name: "Model Inference",
-    key: "inference",
-    color: "#ff69b4",
-    compute: 24,
-    loaned: 8,
-    loanedFrom: "10:00",
-    loanedTill: "10:45",
-    pct: 46,
-    status: "active",
-    origin: "Node-Cluster-A",
-  },
-  {
-    name: "Data Processing",
-    key: "dataProcessing",
-    color: "#a78bfa",
-    compute: 14,
-    loaned: 4,
-    loanedFrom: "10:05",
-    loanedTill: "11:00",
-    pct: 27,
-    status: "active",
-    origin: "Node-Cluster-B",
-  },
-  {
-    name: "Network Routing",
-    key: "networkRouting",
-    color: "#38bdf8",
-    compute: 9,
-    loaned: 0,
-    loanedFrom: "—",
-    loanedTill: "—",
-    pct: 17,
-    status: "active",
-    origin: "Node-Cluster-A",
-  },
-  {
-    name: "Storage I/O",
-    key: "storageIO",
-    color: "#22c55e",
-    compute: 5,
-    loaned: 2,
-    loanedFrom: "09:50",
-    loanedTill: "10:30",
-    pct: 10,
-    status: "idle",
-    origin: "Node-Cluster-C",
-  },
+  { name: "Model Inference",  key: "inference",     color: "#fa04fa", compute: 24, loaned: 8, loanedFrom: "10:00", loanedTill: "10:45", pct: 46, status: "active", origin: "Node-Cluster-A" },
+  { name: "Data Processing",  key: "dataProcessing", color: "#fa04fa", compute: 14, loaned: 4, loanedFrom: "10:05", loanedTill: "11:00", pct: 27, status: "active", origin: "Node-Cluster-B" },
+  { name: "Network Routing",  key: "networkRouting", color: "#c084fc", compute: 9,  loaned: 0, loanedFrom: "—",     loanedTill: "—",     pct: 17, status: "active", origin: "Node-Cluster-A" },
+  { name: "Storage I/O",      key: "storageIO",      color: "#22c55e", compute: 5,  loaned: 2, loanedFrom: "09:50", loanedTill: "10:30", pct: 10, status: "idle",   origin: "Node-Cluster-C" },
 ];
 
 const TOTAL_CAPACITY = 60;
-
 type ChartType = "bar" | "area";
+
+function CornerMarks() {
+  return (
+    <>
+      <span className="absolute top-0 left-0 w-3 h-3 border-t border-l border-primary/50 pointer-events-none" />
+      <span className="absolute top-0 right-0 w-3 h-3 border-t border-r border-primary/50 pointer-events-none" />
+      <span className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-primary/50 pointer-events-none" />
+      <span className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-primary/50 pointer-events-none" />
+    </>
+  );
+}
 
 export default function SCUUsagePage() {
   const [chartType, setChartType] = useState<ChartType>("bar");
   const totalCurrent = processes.reduce((s, p) => s + p.compute, 0);
 
   return (
-    <div className="flex flex-col gap-8 p-8 max-w-7xl mx-auto w-full">
-      {/* Back */}
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard">
-          <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] uppercase font-bold tracking-widest opacity-60 hover:opacity-100">
-            <ArrowLeft className="w-3 h-3" />
-            Back
-          </Button>
-        </Link>
+    <div className="flex flex-col gap-5 p-8 max-w-7xl mx-auto w-full">
+
+      {/* Status bar */}
+      <div className="relative flex items-center justify-between border border-white/6 bg-[#0d0d0d] px-5 py-3">
+        <CornerMarks />
+        <div className="flex items-center gap-5">
+          <Link href="/dashboard">
+            <button className="flex items-center gap-2 font-mono text-[9px] text-white/55 hover:text-primary tracking-[0.25em] uppercase transition-colors">
+              <ArrowLeft className="w-3 h-3" />
+              BACK
+            </button>
+          </Link>
+          <span className="font-mono text-[9px] text-white/40">·</span>
+          <span className="font-mono text-[9px] text-white/45 tracking-[0.3em] uppercase">[DAT.003] · SCU USAGE · TASK MANAGER</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Activity className="w-3 h-3 text-primary/50" />
+          <span className="font-mono text-[9px] text-primary/50 tracking-widest">{totalCurrent} / {TOTAL_CAPACITY} SCU</span>
+        </div>
       </div>
 
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/20">
-            <Activity className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-0.5">Power Usage Analytics</p>
-            <h1 className="text-2xl font-black tracking-tight uppercase">SCU Usage</h1>
-          </div>
+      {/* Page title */}
+      <div className="relative bg-[#0d0d0d] border border-white/6 px-7 py-5 flex items-end justify-between">
+        <CornerMarks />
+        <div>
+          <p className="font-mono text-[8px] text-white/45 tracking-[0.35em] uppercase mb-1">Power Usage Analytics</p>
+          <h1 className="font-mono text-3xl font-black tracking-tighter uppercase text-white">SCU USAGE</h1>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-0.5">Total Active</p>
-          <p className="text-2xl font-black tracking-tight">
-            {totalCurrent}<span className="text-base opacity-20 ml-1">/ {TOTAL_CAPACITY} SCU</span>
+          <p className="font-mono text-[8px] text-white/45 tracking-[0.3em] uppercase mb-1">Total Active</p>
+          <p className="font-mono text-2xl font-black tracking-tighter text-white">
+            {totalCurrent}
+            <span className="font-mono text-base text-white/40 ml-2">/ {TOTAL_CAPACITY} SCU</span>
           </p>
         </div>
       </div>
 
-      {/* Chart Card */}
-      <div className="bg-card border border-white/5 rounded-3xl p-8">
-        <div className="flex justify-between items-start mb-10">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-1">Breakdown by Process</p>
-            <h3 className="text-xl font-black tracking-tight uppercase">Power Usage — Task Manager</h3>
+      {/* Chart card */}
+      <div className="relative bg-[#0d0d0d] border border-white/6 p-7">
+        <CornerMarks />
+        <div className="flex justify-between items-start mb-8">
+          <div className="space-y-1">
+            <span className="font-mono text-[8px] text-white/45 tracking-[0.35em] uppercase">[DAT.003.A] · BREAKDOWN BY PROCESS</span>
+            <h3 className="font-mono text-xl font-black tracking-tighter uppercase text-white">Power Usage — Task Manager</h3>
           </div>
-          <div className="flex flex-col items-end gap-4">
+          <div className="flex flex-col items-end gap-3">
             {/* Toggle */}
-            <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
+            <div className="flex items-center gap-0 border border-white/8">
               <button
                 onClick={() => setChartType("bar")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  chartType === "bar" ? "bg-primary/20 text-primary" : "opacity-40 hover:opacity-70"
+                className={`flex items-center gap-1.5 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em] transition-all border-r border-white/8 ${
+                  chartType === "bar" ? "bg-primary/10 text-primary" : "text-white/50 hover:text-white/50"
                 }`}
               >
                 <BarChart2 className="w-3 h-3" />
-                Bar
+                BAR
               </button>
               <button
                 onClick={() => setChartType("area")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  chartType === "area" ? "bg-primary/20 text-primary" : "opacity-40 hover:opacity-70"
+                className={`flex items-center gap-1.5 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em] transition-all ${
+                  chartType === "area" ? "bg-primary/10 text-primary" : "text-white/50 hover:text-white/50"
                 }`}
               >
                 <TrendingUpIcon className="w-3 h-3" />
-                Area
+                AREA
               </button>
             </div>
             {/* Legend */}
@@ -153,19 +126,19 @@ export default function SCUUsagePage() {
               {chartType === "bar" ? (
                 processes.map((p) => (
                   <div key={p.key} className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded" style={{ backgroundColor: p.color }} />
-                    <span className="text-[10px] font-bold opacity-40 uppercase">{p.name}</span>
+                    <div className="w-1.5 h-1.5" style={{ backgroundColor: p.color }} />
+                    <span className="font-mono text-[8px] text-white/50 uppercase tracking-widest">{p.name}</span>
                   </div>
                 ))
               ) : (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded bg-[#22c55e]" />
-                    <span className="text-[10px] font-bold opacity-40 uppercase">Owned CAU capacity</span>
+                    <div className="w-1.5 h-1.5 bg-[#22c55e]" />
+                    <span className="font-mono text-[8px] text-white/50 uppercase tracking-widest">OWNED CAU</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded bg-[#ff69b4]" />
-                    <span className="text-[10px] font-bold opacity-40 uppercase">Borrowed CAU capacity</span>
+                    <div className="w-1.5 h-1.5 bg-primary" />
+                    <span className="font-mono text-[8px] text-white/50 uppercase tracking-widest">BORROWED CAU</span>
                   </div>
                 </>
               )}
@@ -173,157 +146,141 @@ export default function SCUUsagePage() {
           </div>
         </div>
 
-        <div className="h-[340px] w-full">
+        <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === "bar" ? (
-              <BarChart data={chartData} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                <XAxis dataKey="time" stroke="rgba(255,255,255,0.2)" fontSize={10} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="rgba(255,255,255,0.2)" fontSize={10} tickLine={false} axisLine={false} dx={-10} unit=" SCU" />
+              <BarChart data={chartData} barCategoryGap="35%">
+                <CartesianGrid strokeDasharray="1 6" vertical={false} stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="time" stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dy={10} fontFamily="monospace" />
+                <YAxis stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dx={-10} unit=" SCU" fontFamily="monospace" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#0a0a0a", borderColor: "rgba(255,255,255,0.1)", borderRadius: "12px", fontSize: "10px" }}
-                  itemStyle={{ color: "#ffffff" }}
-                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  contentStyle={{ backgroundColor: "#0d0d0d", borderColor: "rgba(250,4,250,0.2)", borderRadius: "0", fontSize: "9px", fontFamily: "monospace" }}
+                  itemStyle={{ color: "#e8e8e8" }}
+                  labelStyle={{ color: "rgba(255,255,255,0.4)" }}
+                  cursor={{ fill: "rgba(255,255,255,0.02)" }}
                 />
                 {processes.map((p) => (
-                  <Bar key={p.key} dataKey={p.key} stackId="a" fill={p.color} name={p.name} radius={p.key === "inference" ? [4, 4, 0, 0] : [0, 0, 0, 0]} />
+                  <Bar key={p.key} dataKey={p.key} stackId="a" fill={p.color} name={p.name} radius={[0, 0, 0, 0]} fillOpacity={0.85} />
                 ))}
               </BarChart>
             ) : (
               <AreaChart data={chartData}>
                 <defs>
-                  <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.6} />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0.1} />
+                  <linearGradient id="greenBg2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0.03} />
                   </linearGradient>
-                  <linearGradient id="pinkBg" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#831843" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#ff69b4" stopOpacity={0.2} />
+                  <linearGradient id="pinkBg2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#fa04fa" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#fa04fa" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <ReferenceArea y1={25} fill="url(#greenBg)" />
-                <ReferenceLine y={25} stroke="#22c55e" strokeOpacity={0.5} strokeDasharray="3 3" />
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                <XAxis dataKey="time" stroke="rgba(255,255,255,0.2)" fontSize={10} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="rgba(255,255,255,0.2)" fontSize={10} tickLine={false} axisLine={false} dx={-10} />
+                <ReferenceArea y1={25} fill="url(#greenBg2)" />
+                <ReferenceLine y={25} stroke="#22c55e" strokeOpacity={0.3} strokeDasharray="4 4" />
+                <CartesianGrid strokeDasharray="1 6" vertical={false} stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="time" stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dy={10} fontFamily="monospace" />
+                <YAxis stroke="rgba(255,255,255,0.12)" fontSize={9} tickLine={false} axisLine={false} dx={-10} fontFamily="monospace" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#0a0a0a", borderColor: "rgba(255,255,255,0.1)", borderRadius: "12px", fontSize: "10px" }}
-                  itemStyle={{ color: "#ffffff" }}
-                  cursor={{ stroke: "rgba(255,255,255,0.2)", strokeWidth: 1, strokeDasharray: "5 5" }}
+                  contentStyle={{ backgroundColor: "#0d0d0d", borderColor: "rgba(250,4,250,0.2)", borderRadius: "0", fontSize: "9px", fontFamily: "monospace" }}
+                  itemStyle={{ color: "#fa04fa" }}
+                  labelStyle={{ color: "rgba(255,255,255,0.4)" }}
+                  cursor={{ stroke: "rgba(250,4,250,0.25)", strokeWidth: 1, strokeDasharray: "4 4" }}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="limit"
-                  baseValue={25}
-                  stroke="rgba(255,105,180,0.5)"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  fill="url(#pinkBg)"
-                  fillOpacity={1}
-                  animationDuration={2000}
-                  activeDot={false}
-                  name="Capacity Limit"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="power"
-                  stroke="rgba(255,255,255,0.5)"
-                  strokeWidth={2}
-                  fillOpacity={0}
-                  animationDuration={2000}
-                  name="CAU Usage"
-                />
+                <Area type="monotone" dataKey="limit" baseValue={25} stroke="rgba(250,4,250,0.4)" strokeWidth={1.5} strokeDasharray="5 5" fill="url(#pinkBg2)" fillOpacity={1} animationDuration={1500} activeDot={false} name="Capacity Limit" />
+                <Area type="monotone" dataKey="power" stroke="rgba(255,255,255,0.35)" strokeWidth={1.5} fillOpacity={0} animationDuration={1500} name="CAU Usage" />
               </AreaChart>
             )}
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Usage Table */}
-      <div className="bg-card border border-white/5 rounded-3xl p-8">
-        <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-1">Process Breakdown</p>
-          <h3 className="text-xl font-black tracking-tight uppercase">Active Processes</h3>
+      {/* Process Table */}
+      <div className="relative bg-[#0d0d0d] border border-white/6 p-7">
+        <CornerMarks />
+        <div className="mb-7 space-y-1">
+          <span className="font-mono text-[8px] text-white/45 tracking-[0.35em] uppercase">[DAT.003.B] · PROCESS BREAKDOWN</span>
+          <h3 className="font-mono text-xl font-black tracking-tighter uppercase text-white">Active Processes</h3>
         </div>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-[2fr_1fr_1.5fr_2fr_1.5fr_1fr_1.5fr] gap-4 px-4 mb-3">
-          {["Compute", "Compute Loaned", "Start", "End", "Load", "Status", "Origin"].map((h) => (
-            <p key={h} className="text-[9px] font-bold uppercase tracking-widest opacity-30">{h}</p>
+        {/* Table header */}
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 pb-3 border-b border-white/5 mb-1">
+          {["Compute", "Loaned", "Start", "End", "Load", "Status", "Origin"].map((h) => (
+            <p key={h} className="font-mono text-[8px] text-white/45 tracking-[0.3em] uppercase">{h}</p>
           ))}
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="space-y-0.5">
           {processes.map((p) => (
             <div
               key={p.key}
-              className="grid grid-cols-[2fr_1fr_1.5fr_2fr_1.5fr_1fr_1.5fr] gap-4 items-center px-4 py-3 rounded-2xl bg-white/2 border border-white/5"
+              className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr_1fr_1.5fr] gap-4 items-center px-4 py-3 border border-transparent hover:border-white/5 hover:bg-white/[0.01] transition-colors"
             >
               {/* Compute */}
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                <div className="w-1.5 h-1.5 shrink-0" style={{ backgroundColor: p.color }} />
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-tight">{p.name}</p>
-                  <p className="text-[9px] font-black opacity-60" style={{ color: p.color }}>{p.compute} SCU</p>
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-tight text-white/70">{p.name}</p>
+                  <p className="font-mono text-[9px] font-black" style={{ color: p.color }}>{p.compute} SCU</p>
                 </div>
               </div>
 
-              {/* Compute Loaned */}
-              <p className="text-[11px] font-black opacity-60">
-                {p.loaned > 0 ? `${p.loaned} SCU` : <span className="opacity-30">—</span>}
+              {/* Loaned */}
+              <p className="font-mono text-[10px] text-white/40">
+                {p.loaned > 0 ? `${p.loaned} SCU` : "—"}
               </p>
 
-              {/* Time Loaned From */}
-              <p className="text-[11px] font-bold opacity-60">{p.loanedFrom}</p>
+              {/* Start */}
+              <p className="font-mono text-[10px] text-white/55">{p.loanedFrom}</p>
 
-              {/* Till */}
-              <p className="text-[11px] font-bold opacity-60">{p.loanedTill}</p>
+              {/* End */}
+              <p className="font-mono text-[10px] text-white/55">{p.loanedTill}</p>
 
-              {/* Load bar */}
+              {/* Load */}
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                <div className="flex-1 h-px bg-white/8">
                   <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${p.pct}%`, backgroundColor: p.color, boxShadow: `0 0 6px ${p.color}` }}
+                    className="h-full transition-all duration-500"
+                    style={{ width: `${p.pct}%`, backgroundColor: p.color }}
                   />
                 </div>
-                <span className="text-[9px] font-black opacity-40 w-7 text-right">{p.pct}%</span>
+                <span className="font-mono text-[9px] font-black text-white/55 w-7 text-right">{p.pct}%</span>
               </div>
 
               {/* Status */}
-              <div className={`flex items-center gap-1.5 ${p.status === "active" ? "opacity-100" : "opacity-40"}`}>
+              <div className="flex items-center gap-1.5">
                 <div
-                  className={`w-1.5 h-1.5 rounded-full ${p.status === "active" ? "animate-pulse" : ""}`}
+                  className={`w-1.5 h-1.5 ${p.status === "active" ? "animate-pulse" : "opacity-30"}`}
                   style={{ backgroundColor: p.status === "active" ? p.color : "rgba(255,255,255,0.3)" }}
                 />
-                <span className="text-[9px] font-bold uppercase tracking-widest">{p.status}</span>
+                <span className="font-mono text-[9px] uppercase tracking-widest" style={{ color: p.status === "active" ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.2)" }}>
+                  {p.status}
+                </span>
               </div>
 
               {/* Origin */}
-              <p className="text-[10px] font-bold opacity-50 uppercase tracking-tight">{p.origin}</p>
+              <p className="font-mono text-[9px] text-white/55 uppercase tracking-tight">{p.origin}</p>
             </div>
           ))}
         </div>
 
-        {/* Footer totals */}
-        <div className="grid grid-cols-[2fr_1fr_1.5fr_2fr_1.5fr_1fr_1.5fr] gap-4 px-4 mt-4 pt-4 border-t border-white/5 items-center">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Total</p>
-          <p className="text-[11px] font-black text-primary">{processes.reduce((s, p) => s + p.loaned, 0)} SCU</p>
-          <div />
-          <div />
+        {/* Totals row */}
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.5fr_1fr_1.5fr] gap-4 px-4 mt-2 pt-4 border-t border-white/5 items-center">
+          <p className="font-mono text-[9px] text-white/55 tracking-[0.3em] uppercase">Total</p>
+          <p className="font-mono text-[10px] font-black text-primary">{processes.reduce((s, p) => s + p.loaned, 0)} SCU</p>
+          <div /><div />
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+            <div className="flex-1 h-px bg-white/8">
               <div
-                className="h-full rounded-full bg-primary shadow-[0_0_6px_#ff69b4]"
+                className="h-full bg-primary shadow-[0_0_6px_#fa04fa]"
                 style={{ width: `${Math.round((totalCurrent / TOTAL_CAPACITY) * 100)}%` }}
               />
             </div>
-            <span className="text-[9px] font-black opacity-40 w-7 text-right">{Math.round((totalCurrent / TOTAL_CAPACITY) * 100)}%</span>
+            <span className="font-mono text-[9px] font-black text-white/55 w-7 text-right">{Math.round((totalCurrent / TOTAL_CAPACITY) * 100)}%</span>
           </div>
-          <div />
-          <div />
+          <div /><div />
         </div>
       </div>
+
     </div>
   );
 }
