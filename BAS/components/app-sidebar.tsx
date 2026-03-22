@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 const navItems = [
   { title: "Dashboard", url: "/dashboard",       icon: LayoutDashboard, code: "01" },
   { title: "History",   url: "/dashboard",       icon: History,         code: "02" },
-  { title: "Transfer",  url: "/dashboard",       icon: ArrowLeftRight,  code: "03" },
+  { title: "Transfer",  url: "/swap",            icon: ArrowLeftRight,  code: "03" },
   { title: "CAU",       url: "/dashboard/cau",   icon: CircuitBoard,    code: "04" },
 ];
 
