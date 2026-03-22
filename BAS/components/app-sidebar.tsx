@@ -5,10 +5,14 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard",       icon: LayoutDashboard, code: "01" },
-  { title: "History",   url: "/payment",         icon: History,         code: "02" },
-  { title: "Transfer",  url: "/swap",            icon: ArrowLeftRight,  code: "03" },
-  { title: "Payment",   url: "/payment",         icon: CreditCard,      code: "04" },
-  { title: "CAU",       url: "/dashboard/cau",   icon: CircuitBoard,    code: "05" },
+  { title: "History",   url: "/dashboard",       icon: History,         code: "02" },
+  { title: "Transfer",  url: "/dashboard",       icon: ArrowLeftRight,  code: "03" },
+  { title: "CAU",       url: "/dashboard/cau",   icon: CircuitBoard,    code: "04" },
+<<<<<<< Updated upstream
+  { title: "Simulation",       url: "/sim",   icon: CircuitBoard,    code: "06" },
+=======
+  { title: "test",       url: "/dashboard/test",   icon: CircuitBoard,    code: "05" },
+>>>>>>> Stashed changes
 ];
 
 export function AppSidebar() {
