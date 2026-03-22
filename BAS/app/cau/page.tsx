@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { ArrowLeft, Cpu, HardDrive, MemoryStick } from "lucide-react";
 import Link from "next/link";
 import {
@@ -12,6 +13,8 @@ import {
   type CAUType,
   type CAUTier,
 } from "@/lib/mock-data";
+
+const GPUViewerModal = dynamic(() => import("@/components/gpu-viewer-modal"), { ssr: false });
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -47,13 +50,16 @@ function StatPill({ label, value, dim }: { label: string; value: string; dim?: s
 
 // ─── CAU Card ──────────────────────────────────────────────────────────────
 
-function CAUCard({ cau }: { cau: CAU }) {
+function CAUCard({ cau, onClick }: { cau: CAU; onClick?: () => void }) {
   const typeColor = CAU_TYPE_COLOR[cau.type];
   const tierColor = CAU_TIER_COLOR[cau.tier];
   const isActive = cau.status === "active";
 
   return (
-    <div className="relative bg-[#0d0d0d] border border-white/[0.06] p-6 flex flex-col gap-5 hover:border-white/[0.12] transition-colors overflow-hidden">
+    <div
+      className={`relative bg-[#0d0d0d] border border-white/[0.06] p-6 flex flex-col gap-5 transition-colors overflow-hidden ${cau.type === "GPU" ? "cursor-pointer hover:border-white/[0.20]" : "hover:border-white/[0.12]"}`}
+      onClick={cau.type === "GPU" ? onClick : undefined}
+    >
       <CornerMarks />
 
       {/* Faint type glow strip */}
@@ -165,9 +171,16 @@ function CAUCard({ cau }: { cau: CAU }) {
       </div>
 
       {/* Acquired date */}
-      <p className="font-mono text-[8px] text-white/45 tracking-[0.2em] uppercase">
-        ACQ · {cau.acquiredDate}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-[8px] text-white/45 tracking-[0.2em] uppercase">
+          ACQ · {cau.acquiredDate}
+        </p>
+        {cau.type === "GPU" && (
+          <span className="font-mono text-[7px] tracking-[0.25em] uppercase" style={{ color: `${typeColor}60` }}>
+            CLICK · 3D VIEW
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -178,6 +191,7 @@ type FilterType = "ALL" | CAUType;
 
 export default function CAUPage() {
   const [filter, setFilter] = useState<FilterType>("ALL");
+  const [selectedGPU, setSelectedGPU] = useState<CAU | null>(null);
 
   const totalSCU    = CAU_ASSETS.reduce((s, c) => s + c.scu, 0);
   const activeCount = CAU_ASSETS.filter((c) => c.status === "active").length;
@@ -186,6 +200,9 @@ export default function CAUPage() {
 
   return (
     <div className="flex flex-col gap-5 p-8 max-w-7xl mx-auto w-full">
+      {selectedGPU && (
+        <GPUViewerModal cau={selectedGPU} onClose={() => setSelectedGPU(null)} />
+      )}
 
       {/* Status bar */}
       <div className="relative flex items-center justify-between border border-white/[0.06] bg-[#0d0d0d] px-5 py-3">
@@ -260,7 +277,11 @@ export default function CAUPage() {
         {/* CAU cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((cau) => (
-            <CAUCard key={cau.id} cau={cau} />
+            <CAUCard
+              key={cau.id}
+              cau={cau}
+              onClick={cau.type === "GPU" ? () => setSelectedGPU(cau) : undefined}
+            />
           ))}
         </div>
       </div>
