@@ -1,16 +1,18 @@
 "use client";
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ArrowLeftRight, History, CircuitBoard, CreditCard } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, History, CircuitBoard, CreditCard, TrendingUp, Users, Gauge } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard",       icon: LayoutDashboard, code: "01" },
-  { title: "History",   url: "/history",         icon: History,         code: "02" },
-  { title: "Swap",      url: "/swap",            icon: ArrowLeftRight,  code: "03" },
-  { title: "Payment",   url: "/payment",         icon: CreditCard,      code: "04" },
-  { title: "CAU",       url: "/cau",             icon: CircuitBoard,    code: "05" },
-  { title: "Simulation",url: "/sim",             icon: CircuitBoard,    code: "06" },
+  { title: "Dashboard",     url: "/dashboard",      icon: LayoutDashboard, code: "01" },
+  { title: "History",       url: "/history",        icon: History,         code: "02" },
+  { title: "Swap",          url: "/swap",           icon: ArrowLeftRight,  code: "03" },
+  { title: "Payment",       url: "/payment",        icon: CreditCard,      code: "04" },
+  { title: "CAU",           url: "/cau",            icon: CircuitBoard,    code: "05" },
+  { title: "Simulation",    url: "/sim",            icon: Gauge,           code: "06" },
+  { title: "Stocks",        url: "/stocks_market",  icon: TrendingUp,      code: "07" },
+  { title: "Entities",      url: "/entities-live",  icon: Users,           code: "08" },
 ];
 
 export function AppSidebar() {
