@@ -51,3 +51,33 @@ def get_queued_actions(limit: int = 100):
         )
         rows = [dict(r) for r in cur.fetchall()]
         return rows
+    
+
+@router.get("/history/stock-trades")
+def get_stock_trades(limit: int = 100):
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            """
+            SELECT *
+            FROM stock_trades
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        return [dict(r) for r in cur.fetchall()]
+
+
+@router.get("/history/stock-prices")
+def get_stock_prices(limit: int = 200):
+    with db_cursor() as (conn, cur):
+        cur.execute(
+            """
+            SELECT *
+            FROM stock_price_history
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        return [dict(r) for r in cur.fetchall()]

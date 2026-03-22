@@ -183,3 +183,75 @@ def init_db() -> None:
             "INSERT OR IGNORE INTO market_state (id, scu_price, last_total_supply, last_total_demand, last_traded_volume, last_shortage_ratio, last_volatility) VALUES (1, ?, 0, 0, 0, 0, 0)",
             (settings.base_scu_price,),
         )
+
+        cur.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS listed_stocks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ticker TEXT NOT NULL UNIQUE,
+                name TEXT NOT NULL,
+                archetype TEXT NOT NULL,
+                current_price REAL NOT NULL,
+                previous_price REAL NOT NULL,
+                target_price REAL NOT NULL,
+                shares_outstanding REAL NOT NULL,
+                base_drift REAL NOT NULL DEFAULT 0,
+                volatility REAL NOT NULL DEFAULT 0.02,
+                soft_floor REAL NOT NULL DEFAULT 1.0,
+                soft_ceiling REAL NOT NULL DEFAULT 100.0,
+                momentum_factor REAL NOT NULL DEFAULT 0.5,
+                mean_reversion_factor REAL NOT NULL DEFAULT 0.02,
+                breakout_chance REAL NOT NULL DEFAULT 0.01,
+                breakout_strength REAL NOT NULL DEFAULT 0.03,
+                crash_chance REAL NOT NULL DEFAULT 0.01,
+                crash_severity REAL NOT NULL DEFAULT 0.08,
+                dependency_json TEXT,
+                current_regime TEXT NOT NULL DEFAULT 'normal',
+                regime_ticks_remaining INTEGER NOT NULL DEFAULT 0,
+                sentiment REAL NOT NULL DEFAULT 0,
+                is_active INTEGER NOT NULL DEFAULT 1
+            );
+
+            CREATE TABLE IF NOT EXISTS entity_stock_holdings (
+                entity_id INTEGER NOT NULL,
+                stock_id INTEGER NOT NULL,
+                shares_owned REAL NOT NULL,
+                avg_cost_basis REAL NOT NULL,
+                PRIMARY KEY (entity_id, stock_id),
+                FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE CASCADE,
+                FOREIGN KEY (stock_id) REFERENCES listed_stocks(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS stock_price_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tick INTEGER NOT NULL,
+                stock_id INTEGER NOT NULL,
+                ticker TEXT NOT NULL,
+                price REAL NOT NULL,
+                shares_traded REAL NOT NULL DEFAULT 0,
+                volume_cc REAL NOT NULL DEFAULT 0,
+                regime TEXT NOT NULL,
+                sentiment REAL NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (stock_id) REFERENCES listed_stocks(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS stock_trades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tick INTEGER NOT NULL,
+                entity_id INTEGER NOT NULL,
+                stock_id INTEGER NOT NULL,
+                ticker TEXT NOT NULL,
+                side TEXT NOT NULL,
+                requested_quantity REAL NOT NULL,
+                filled_quantity REAL NOT NULL,
+                price REAL NOT NULL,
+                notional_cc REAL NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (entity_id) REFERENCES entities(id),
+                FOREIGN KEY (stock_id) REFERENCES listed_stocks(id)
+            );
+            """
+        )
+
+        

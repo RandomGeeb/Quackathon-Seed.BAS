@@ -1,5 +1,6 @@
 import json
 from fastapi import APIRouter, HTTPException
+from app.schemas import BuyStockRequest, SellStockRequest
 
 from app.db import db_cursor
 from app.schemas import (
@@ -124,4 +125,41 @@ def liquidate(req: LiquidateRequest):
         req.actor_entity_id,
         None,
         {"cau_to_sell": req.cau_to_sell},
+    )
+
+@router.post("/actions/buy-stock", response_model=QueueActionResponse)
+def buy_stock(req: BuyStockRequest):
+    if not _entity_exists(req.actor_entity_id):
+        raise HTTPException(status_code=404, detail="entity not found")
+
+    with db_cursor() as (conn, cur):
+        cur.execute("SELECT id FROM listed_stocks WHERE ticker = ? AND is_active = 1", (req.stock_ticker.upper(),))
+        row = cur.fetchone()
+        if row is None:
+            raise HTTPException(status_code=404, detail="stock not found")
+
+    return _queue_action(
+        "manual_buy_stock",
+        req.actor_entity_id,
+        None,
+        {"stock_ticker": req.stock_ticker.upper(), "quantity": req.quantity},
+    )
+
+
+@router.post("/actions/sell-stock", response_model=QueueActionResponse)
+def sell_stock(req: SellStockRequest):
+    if not _entity_exists(req.actor_entity_id):
+        raise HTTPException(status_code=404, detail="entity not found")
+
+    with db_cursor() as (conn, cur):
+        cur.execute("SELECT id FROM listed_stocks WHERE ticker = ? AND is_active = 1", (req.stock_ticker.upper(),))
+        row = cur.fetchone()
+        if row is None:
+            raise HTTPException(status_code=404, detail="stock not found")
+
+    return _queue_action(
+        "manual_sell_stock",
+        req.actor_entity_id,
+        None,
+        {"stock_ticker": req.stock_ticker.upper(), "quantity": req.quantity},
     )

@@ -9,7 +9,7 @@ class Settings(BaseModel):
     auto_seed_if_empty: bool = True
     entity_count: int = 150
     base_scu_price: float = 10.0
-    max_event_modifier: float = 0.6
+    max_event_modifier: float = 0.9
 
 
 settings = Settings()

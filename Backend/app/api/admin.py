@@ -40,7 +40,12 @@ def reset_world():
         "tick_metrics",
         "entity_state_history",
         "system_log",
+        "listed_stocks",
+        "entity_stock_holdings",
+        "stock_price_history",
+        "stock_trades",
     ]
+    
     with db_cursor() as (conn, cur):
         for table in tables:
             cur.execute(f"DELETE FROM {table}")

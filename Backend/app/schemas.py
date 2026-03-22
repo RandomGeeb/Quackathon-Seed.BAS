@@ -74,3 +74,15 @@ class SystemLogRecord(BaseModel):
     level: str
     message: str
     created_at: str
+
+
+class BuyStockRequest(BaseModel):
+    actor_entity_id: int
+    stock_ticker: str
+    quantity: float = Field(gt=0)
+
+
+class SellStockRequest(BaseModel):
+    actor_entity_id: int
+    stock_ticker: str
+    quantity: float = Field(gt=0)
