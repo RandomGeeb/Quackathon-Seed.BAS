@@ -29,21 +29,23 @@ def trigger_event(req: TriggerEventRequest):
 
 @router.post("/admin/reset")
 def reset_world():
+    # Children with a FK to entities/listed_stocks (but no ON DELETE CASCADE)
+    # must be cleared before their parent table, or the FK constraint trips.
     tables = [
-        "entities",
-        "entity_state",
-        "active_events",
-        "event_history",
         "action_queue",
         "executed_actions",
         "market_trades",
-        "tick_metrics",
         "entity_state_history",
-        "system_log",
-        "listed_stocks",
         "entity_stock_holdings",
         "stock_price_history",
         "stock_trades",
+        "active_events",
+        "event_history",
+        "tick_metrics",
+        "system_log",
+        "entity_state",
+        "entities",
+        "listed_stocks",
     ]
     
     with db_cursor() as (conn, cur):

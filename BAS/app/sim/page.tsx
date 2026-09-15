@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Users,
   AlertTriangle,
+  RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -248,6 +249,8 @@ export default function SimPage() {
   const [tickHistory, setTickHistory] = useState<TickMetric[]>([]);
   const [entities, setEntities] = useState<EntitySummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   async function loadData() {
     try {
@@ -274,6 +277,25 @@ export default function SimPage() {
     const timer = setInterval(loadData, 2500);
     return () => clearInterval(timer);
   }, []);
+
+  async function handleResetMarket() {
+    const confirmed = window.confirm(
+      "Reset the simulation? This wipes all entities, trades, and history, and reseeds a fresh economy at tick 0."
+    );
+    if (!confirmed) return;
+
+    setResetting(true);
+    setResetError(null);
+    try {
+      const res = await fetch(`${API_BASE}/admin/reset`, { method: "POST" });
+      if (!res.ok) throw new Error(`Reset failed (${res.status})`);
+      await loadData();
+    } catch (err) {
+      setResetError(err instanceof Error ? err.message : "Reset failed");
+    } finally {
+      setResetting(false);
+    }
+  }
 
   const analytics = useMemo(() => {
     const wealths = entities.map((e) => e.net_worth_estimate);
@@ -338,6 +360,20 @@ export default function SimPage() {
           </span>
         </div>
         <div className="flex items-center gap-4">
+          {resetError && (
+            <span className="font-mono text-[9px] text-red-400 tracking-[0.2em] uppercase">
+              {resetError}
+            </span>
+          )}
+          <button
+            onClick={handleResetMarket}
+            disabled={resetting}
+            className="flex items-center gap-2 border border-white/10 px-3 py-1.5 font-mono text-[9px] text-white/55 tracking-[0.25em] uppercase transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <RotateCcw className={`w-3 h-3 ${resetting ? "animate-spin" : ""}`} />
+            {resetting ? "RESETTING..." : "RESET MARKET"}
+          </button>
+          <span className="font-mono text-[9px] text-white/40">·</span>
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-primary animate-pulse" />
             <span className="font-mono text-[9px] text-primary/60 tracking-[0.25em]">
